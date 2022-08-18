@@ -6,13 +6,24 @@ const range = document.querySelector('#range');
 const label = document.querySelector('#label');
 let dimensions = range.value;
 let isMouseDown = false;
-let pixels;
+let hue = 0;
+
+const reset = () => {
+  dimensions = 16;
+  isMouseDown = false;
+  hue = 0;
+  label.textContent = dimensions;
+  range.value = dimensions;
+  renderPixels(dimensions);
+  drawPixels();
+};
 
 square.addEventListener('mousedown', () => isMouseDown = true);
 square.addEventListener('mouseup', () => isMouseDown = false);
 square.addEventListener('mouseleave', () => isMouseDown = false);
 
 const renderPixels = dimensions => {
+  Array.from(square.children).forEach(child => square.removeChild(child));
   for (let i = 0; i < dimensions; ++i) {
     const row = document.createElement('div');
     row.classList.add('row');
@@ -26,11 +37,11 @@ const renderPixels = dimensions => {
 };
 
 const drawPixels = () => {
-  pixels = Array.from(document.querySelectorAll('.pixel'));
-  pixels.forEach(pxl => pxl.addEventListener('mouseover', event => {
+  const pixels = Array.from(document.querySelectorAll('.pixel'));
+  pixels.forEach(pxl => pxl.addEventListener('mouseover', () => {
     if (!isMouseDown) return;
-    console.log(event.target);
-  }))
+    pxl.style.background = `hsl(${++hue}, 50%, 50%)`;
+  }));
 };
 
 range.addEventListener('input', event => {
@@ -39,10 +50,8 @@ range.addEventListener('input', event => {
 });
 
 range.addEventListener('change', () => {
-  Array.from(square.children).forEach(child => square.removeChild(child));
   renderPixels(dimensions);
   drawPixels();
 });
 
-renderPixels(dimensions);
-drawPixels();
+reset();
